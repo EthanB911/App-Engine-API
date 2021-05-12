@@ -2,8 +2,8 @@
 runtime: python37
 
 env_variables:
-  CLOUD_SQL_USERNAME: YOUR-DB-USERNAME
-  CLOUD_SQL_PASSWORD: YOUR-DB-PASSWORD
-  CLOUD_SQL_DATABASE_NAME: YOUR-DB-NAME
-  CLOUD_SQL_CONNECTION_NAME: YOUR-CONN-NAME
+  CLOUD_SQL_USERNAME: 'ethan'
+  CLOUD_SQL_PASSWORD: '911'
+  CLOUD_SQL_DATABASE_NAME: 'generated_number'
+  CLOUD_SQL_CONNECTION_NAME: 'cloud-computing-test-308013:europe-west2:cloud-mysql1'
 # [END gae_python37_cloudsql_config]

@@ -17,11 +17,13 @@ import os
 
 from flask import Flask
 import pymysql
+import random
 
 db_user = os.environ.get('CLOUD_SQL_USERNAME')
 db_password = os.environ.get('CLOUD_SQL_PASSWORD')
 db_name = os.environ.get('CLOUD_SQL_DATABASE_NAME')
 db_connection_name = os.environ.get('CLOUD_SQL_CONNECTION_NAME')
+instance_name = os.environ.get('GAE_INSTANCE')
 
 app = Flask(__name__)
 
@@ -30,6 +32,8 @@ app = Flask(__name__)
 def main():
     # When deployed to App Engine, the `GAE_ENV` environment variable will be
     # set to `standard`
+    randomlist = []
+    records_to_insert = []
     if os.environ.get('GAE_ENV') == 'standard':
         # If deployed, use the local socket interface for accessing Cloud SQL
         unix_socket = '/cloudsql/{}'.format(db_connection_name)
@@ -44,13 +48,21 @@ def main():
         cnx = pymysql.connect(user=db_user, password=db_password,
                               host=host, db=db_name)
 
+    for i in range(0, 10):
+        n = random.randint(1, 1000)
+        randomlist.append(n)
+        records_to_insert.append((n, instance_name))
+
     with cnx.cursor() as cursor:
-        cursor.execute('YOUR QUERY GOES HERE;')
+        cursor.execute('select instance_name from generated_number;')
         result = cursor.fetchall()
+        mySql_insert_query = """INSERT INTO generated_number ( number, instance_name) VALUES (%s, %s) """
+        cursor.executemany(mySql_insert_query, records_to_insert)
         current_msg = result[0][0]
+    cnx.commit()
     cnx.close()
 
-    return str(current_msg)
+    return str(records_to_insert)
 # [END gae_python37_cloudsql_mysql]
 
 
