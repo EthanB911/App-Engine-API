@@ -14,7 +14,6 @@
 
 # [START gae_python37_cloudsql_mysql]
 import os
-
 from flask import Flask
 import pymysql
 import random
@@ -26,7 +25,6 @@ db_connection_name = os.environ.get('CLOUD_SQL_CONNECTION_NAME')
 instance_name = os.environ.get('GAE_INSTANCE')
 
 app = Flask(__name__)
-
 
 @app.route('/')
 def main():
@@ -58,7 +56,7 @@ def main():
         result = cursor.fetchall()
         mySql_insert_query = """INSERT INTO generated_number ( number, instance_name) VALUES (%s, %s) """
         cursor.executemany(mySql_insert_query, records_to_insert)
-        current_msg = result[0][0]
+        #current_msg = result[0][0]
     cnx.commit()
     cnx.close()
 

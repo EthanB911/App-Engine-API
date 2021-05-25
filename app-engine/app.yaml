@@ -1,9 +1,16 @@
 # [START gae_python37_cloudsql_config]
 runtime: python37
-
 env_variables:
   CLOUD_SQL_USERNAME: 'ethan'
   CLOUD_SQL_PASSWORD: '911'
   CLOUD_SQL_DATABASE_NAME: 'generated_number'
-  CLOUD_SQL_CONNECTION_NAME: 'cloud-computing-test-308013:europe-west2:cloud-mysql1'
+  CLOUD_SQL_CONNECTION_NAME: 'curious-scarab-307013:us-central1:cloud-demo'
+automatic_scaling:
+  target_cpu_utilization: 0.5
+  min_instances: 9
+  max_instances: 11
+  min_pending_latency: 30ms
+  max_pending_latency: automatic
+  max_concurrent_requests: 50
 # [END gae_python37_cloudsql_config]
+#
