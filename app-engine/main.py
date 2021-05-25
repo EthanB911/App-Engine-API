@@ -60,7 +60,7 @@ def main():
     cnx.commit()
     cnx.close()
 
-    return str(records_to_insert)
+    return {"results" : records_to_insert}
 # [END gae_python37_cloudsql_mysql]
 
 
