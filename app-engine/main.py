@@ -30,7 +30,6 @@ app = Flask(__name__)
 def main():
     # When deployed to App Engine, the `GAE_ENV` environment variable will be
     # set to `standard`
-    randomlist = []
     records_to_insert = []
     if os.environ.get('GAE_ENV') == 'standard':
         # If deployed, use the local socket interface for accessing Cloud SQL
@@ -46,14 +45,11 @@ def main():
         cnx = pymysql.connect(user=db_user, password=db_password,
                               host=host, db=db_name)
 
-    for i in range(0, 10):
-        n = random.randint(1, 1000)
-        randomlist.append(n)
+    for i in range(0, 100):
+        n = random.randint(1, 100000)
         records_to_insert.append((n, instance_name))
 
     with cnx.cursor() as cursor:
-        cursor.execute('select instance_name from generated_number;')
-        result = cursor.fetchall()
         mySql_insert_query = """INSERT INTO generated_number ( number, instance_name) VALUES (%s, %s) """
         cursor.executemany(mySql_insert_query, records_to_insert)
         #current_msg = result[0][0]
@@ -62,6 +58,53 @@ def main():
 
     return {"results" : records_to_insert}
 # [END gae_python37_cloudsql_mysql]
+@app.route('/remove')
+def remove():
+    if os.environ.get('GAE_ENV') == 'standard':
+        # If deployed, use the local socket interface for accessing Cloud SQL
+        unix_socket = '/cloudsql/{}'.format(db_connection_name)
+        cnx = pymysql.connect(user=db_user, password=db_password,
+                              unix_socket=unix_socket, db=db_name)
+    else:
+        # If running locally, use the TCP connections instead
+        # Set up Cloud SQL Proxy (cloud.google.com/sql/docs/mysql/sql-proxy)
+        # so that your application can use 127.0.0.1:3306 to connect to your
+        # Cloud SQL instance
+        host = '127.0.0.1'
+        cnx = pymysql.connect(user=db_user, password=db_password,
+                              host=host, db=db_name)
+    with cnx.cursor() as cursor:
+        cursor.execute('delete from generated_number;')
+    cnx.commit()
+    cnx.close()
+
+@app.route('/minmax')
+def minmax():
+    if os.environ.get('GAE_ENV') == 'standard':
+        # If deployed, use the local socket interface for accessing Cloud SQL
+        unix_socket = '/cloudsql/{}'.format(db_connection_name)
+        cnx = pymysql.connect(user=db_user, password=db_password,
+                              unix_socket=unix_socket, db=db_name)
+    else:
+        # If running locally, use the TCP connections instead
+        # Set up Cloud SQL Proxy (cloud.google.com/sql/docs/mysql/sql-proxy)
+        # so that your application can use 127.0.0.1:3306 to connect to your
+        # Cloud SQL instance
+        host = '127.0.0.1'
+        cnx = pymysql.connect(user=db_user, password=db_password,
+                              host=host, db=db_name)
+
+
+    with cnx.cursor() as cursor:
+        cursor.execute('select min(number) as MIN , max(number) as MAX, instance_name from generated_number group by instance_name;')
+        instances = cursor.fetchall()
+
+
+
+    cnx.commit()
+    cnx.close()
+
+    return {"instances": instances}
 
 
 if __name__ == '__main__':
